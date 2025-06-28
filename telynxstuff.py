@@ -1,4 +1,4 @@
-# telynxstuff.py
+# civic_dashboard.py
 
 import streamlit as st
 import pandas as pd
@@ -15,16 +15,6 @@ st.set_page_config(
     layout="wide",
     page_icon="🏛️"
 )
-
-# Helper function to get secrets safely
-def get_secret(key: str, default: str = "") -> str:
-    """Get secret from Streamlit secrets or environment variables"""
-    try:
-        # Try Streamlit secrets first
-        return st.secrets.get(key, default)
-    except:
-        # Fall back to environment variables
-        return os.getenv(key, default)
 
 # Custom CSS for better styling
 st.markdown("""
@@ -68,25 +58,25 @@ with st.expander("⚙️ System Configuration", expanded=False):
     with col1:
         telegram_token = st.text_input(
             "Telegram Bot Token", 
-            value=get_secret("TELEGRAM_BOT_TOKEN"),
+            value=os.getenv("TELEGRAM_BOT_TOKEN", ""),
             type="password",
-            help="Your Telegram bot token from secrets"
+            help="Your Telegram bot token from environment variables or enter manually"
         )
         telegram_channel = st.text_input(
             "Telegram Channel/Chat ID", 
-            value=get_secret("TELEGRAM_CHANNEL_ID"),
-            help="Your Telegram channel/chat ID from secrets"
+            value=os.getenv("TELEGRAM_CHANNEL_ID", ""),
+            help="Your Telegram channel/chat ID from environment variables or enter manually"
         )
     
     with col2:
         telnyx_webhook_url = st.text_input(
             "Telnyx Webhook URL", 
-            value=get_secret("TELNYX_WEBHOOK_URL"),
+            value=os.getenv("TELNYX_WEBHOOK_URL", ""),
             placeholder="https://yourapp.com/webhook"
         )
         admin_contacts = st.text_area(
             "Admin Contacts (comma-separated)", 
-            value=get_secret("ADMIN_EMAILS"),
+            value=os.getenv("ADMIN_EMAILS", ""),
             placeholder="admin1@gov.ng, admin2@gov.ng"
         )
 
@@ -267,8 +257,8 @@ with col3:
     """, unsafe_allow_html=True)
 
 # Configuration Status
-if not get_secret("TELEGRAM_BOT_TOKEN") or not get_secret("TELEGRAM_CHANNEL_ID"):
-    st.warning("⚠️ Missing configuration. Please set TELEGRAM_BOT_TOKEN and TELEGRAM_CHANNEL_ID in your Streamlit secrets.")
+if not os.getenv("TELEGRAM_BOT_TOKEN") or not os.getenv("TELEGRAM_CHANNEL_ID"):
+    st.info("💡 Tip: You can set TELEGRAM_BOT_TOKEN and TELEGRAM_CHANNEL_ID as environment variables, or enter them manually in the configuration section above.")
 
 # Test Section
 st.subheader("🧪 Test the System")
